@@ -9,7 +9,8 @@ A GKE Autopilot cluster runs a pod that reads and writes a Cloud Storage bucket 
 | **Pod** `files` (`manifests/base`, namespace `demo`) | A `google-cloud-cli` container that sleeps, so the owner can run storage commands inside it and see exactly which identity they use. | Kubernetes service account `reader-writer`. No token mounted, no secret, no key file. |
 | **Workload identity pool** `PROJECT_ID.svc.id.goog` | Turns a pod's namespace and Kubernetes service account into an IAM principal. Always on in Autopilot. | The principal `principal://iam.googleapis.com/projects/NUMBER/locations/global/workloadIdentityPools/PROJECT_ID.svc.id.goog/subject/ns/demo/sa/reader-writer`. |
 | **Bucket** (`modules/cmek-bucket`) | The files. Private, uniform access, versioned, default encryption with the key. | `roles/storage.objectUser` for the pod's principal, on the bucket only. |
-| **Key** (`modules/kms-key`) | Key ring `files`, key `files-key`: 90-day rotation, 24-hour destruction window. | `cryptoKeyEncrypterDecrypter` for the **Cloud Storage service agent**, not for the pod. |
+| **CMEK key** (`modules/kms-key`) | Key ring `files`, key `files-key`: 90-day rotation, 24-hour destruction window. | `cryptoKeyEncrypterDecrypter` for the **Cloud Storage service agent**, not for the pod. |
+| **Bucket policy** (IAM on the bucket) | The decision whether the pod's principal may read or write: `roles/storage.objectUser` for the principal, nothing else. | Set by `modules/cmek-bucket`. |
 | **Cluster** (`modules/gke-autopilot`) and **network** (`modules/network`) | Autopilot, private nodes, API endpoint limited to the ranges you list; a custom VPC and a subnet with Private Google Access so nodes without external addresses can still pull the image and call Google APIs. | None of its own for the pod. |
 | **Audit logs** (`modules/audit-logs`) | Data-access audit logs for Cloud Storage, off by default, so denied calls show up in Cloud Logging. | None. |
 | **`gke-triage`** (`src/gke_triage`) | Classifies an error text as identity, authorization or key, summarizes the denials in an audit log export, renders the triage table, builds and checks the principal string. | Runs on your machine; reads files and standard input only. |
@@ -22,7 +23,7 @@ flowchart LR
     pod -->|2. read, write object| bucket[("Bucket<br/>default key: files-key")]
     bucket -->|3. IAM check on the principal| iam{{"Bucket policy<br/>objectUser for the principal"}}
     bucket -->|4. use the key| gcs_agent["Cloud Storage<br/>service agent"]
-    gcs_agent -->|encrypt / decrypt| kms{{"Cloud KMS key<br/>files-key"}}
+    gcs_agent -->|encrypt / decrypt| kms{{"CMEK key<br/>Cloud KMS files-key"}}
     bucket -.->|audit entry per call| logs[/"Cloud Logging<br/>data-access audit"/]
 ```
 

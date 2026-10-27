@@ -40,7 +40,7 @@ No Docker is needed. For the deploy steps you need Owner on the lab project you 
 
 ```bash
 make install        # .venv from the hash-pinned lock file
-make test           # 70+ unit tests and the Terraform tests; the tool, the manifests and the guardrails
+make test           # 81 unit tests and the Terraform tests; the tool, the manifests and the guardrails
 make test-e2e           # the program as a subprocess over the lesson's error texts
 .venv/bin/gke-triage classify tests/fixtures/wrong-service-account.txt
 .venv/bin/gke-triage table tests/fixtures
