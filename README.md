@@ -17,6 +17,7 @@ A GKE Autopilot cluster whose pod reads and writes an encrypted Cloud Storage bu
 - `src/gke_triage/`: the `gke-triage` command: `classify` an error text, `audit` a Cloud Logging export, `table` the triage table from captured errors, `principal` and `check-binding` for the workload identity principal. Standard library only.
 - `scripts/`: the lesson's runbook as the exact `gcloud`, `kubectl` and `terraform` commands: deploy, prove, three break scripts and their restores, teardown.
 - `tests/`: unit tests (classifier, principal, manifests, Terraform guardrails), end-to-end tests of the program, and `tests/fixtures/` with the lesson's error texts.
+- `tech/`: 35 notes, one per technology (Python, Terraform, Bash, Make, each Google Cloud service and every tool), written for a reader who has never met them. Start with [tech/README.md](tech/README.md).
 
 **No Google Cloud project exists yet, so nothing has run on a cluster.** Everything that can be checked without one is: the Terraform is validated, planned offline and tested against a mock provider; the manifests are schema-validated and rendered; the classifier is tested on the lesson's own error texts. The six steps need the project; the commands for them are ready (see "Done when").
 
@@ -164,6 +165,7 @@ Review checklist from the lesson, mapped: key on the object (1), keyless pod and
 │   └── environments/lab/           main.tf, variables.tf, outputs.tf, lab.tfvars.example, tests/
 ├── scripts/                        create-project, deploy, prove, break-*/restore-*, triage-table, teardown
 ├── captures/                       where the break scripts save your real error texts (git-ignored)
+├── tech/                           35 technology notes and an index (README.md)
 └── docs/                           adr/ and triage-table.md
 ```
 

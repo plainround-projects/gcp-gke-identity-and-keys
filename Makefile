@@ -13,7 +13,7 @@ export
         validate validate-terraform plan security audit check triage clean deploy prove teardown up run down
 
 help: ## list the targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | sort
+	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | sort
 
 $(STAMP): requirements-dev.lock pyproject.toml
 	$(PYTHON) -m venv $(VENV)
