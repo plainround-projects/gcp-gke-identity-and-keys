@@ -1,0 +1,13 @@
+# The pod serves nothing, so nothing may connect to it. Egress stays open: the pod must reach the metadata server and
+# the Google APIs, and a restrictive egress policy is easy to get subtly wrong without a cluster to test on.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: demo
+  labels:
+    app.kubernetes.io/part-of: gke-identity-and-keys
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
