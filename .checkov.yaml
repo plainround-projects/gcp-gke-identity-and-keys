@@ -1,0 +1,14 @@
+# make security
+directory:
+  - .
+framework:
+  - terraform
+  - kubernetes
+  - kustomize
+  - github_actions
+  - secrets
+skip-path:
+  - .venv
+  - infra/environments/lab/.terraform
+quiet: true
+compact: true

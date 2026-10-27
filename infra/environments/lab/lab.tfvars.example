@@ -1,0 +1,12 @@
+# Copy to lab.tfvars and edit. The values below are placeholders; `make plan` uses this file as it is.
+project_id     = "example-sandbox-0000"
+project_number = "123456789012" # gcloud projects describe PROJECT_ID --format='value(projectNumber)'. Not the project id.
+region         = "europe-west1"
+
+# Leave empty on a real run: Terraform looks the agent up (which also creates it). Set only for the offline plan.
+storage_service_agent_email = "service-123456789012@gs-project-accounts.iam.gserviceaccount.com"
+
+# Who may reach the cluster's API endpoint. Replace with your own address as a /32 (203.0.113.0/24 is a documentation range).
+master_authorized_cidrs = {
+  laptop = "203.0.113.7/32"
+}
