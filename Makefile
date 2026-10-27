@@ -10,7 +10,7 @@ TF ?= terraform
 export
 
 .PHONY: help install lint lint-python lint-terraform lint-manifests format test test-python test-terraform test-e2e \
-        validate validate-terraform plan security audit check triage clean deploy prove teardown
+        validate validate-terraform plan security audit check triage clean deploy prove teardown up run down
 
 help: ## list the targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | sort
@@ -91,11 +91,19 @@ triage: $(STAMP) ## render the triage table from captures/*.txt (written by the 
 deploy: ## terraform apply, then the manifests (needs the project)
 	scripts/deploy.sh
 
+up: deploy ## alias of deploy (needs the project)
+
+run: $(STAMP) ## classify the lesson's error texts and print the triage table (no project needed)
+	$(VENV)/bin/gke-triage classify tests/fixtures/wrong-service-account.txt
+	$(VENV)/bin/gke-triage table tests/fixtures
+
 prove: ## the runbook checks for Done when steps 1 and 2 (needs the project)
 	scripts/prove.sh
 
 teardown: ## destroy the cluster and bucket, then delete the project (needs the project)
 	scripts/teardown.sh
+
+down: teardown ## alias of teardown (needs the project)
 
 clean:
 	rm -rf $(VENV) .pytest_cache .mypy_cache .ruff_cache .coverage .import_linter_cache

@@ -41,7 +41,8 @@ No Docker is needed. For the deploy steps you need Owner on the lab project you 
 ```bash
 make install        # .venv from the hash-pinned lock file
 make test           # 81 unit tests and the Terraform tests; the tool, the manifests and the guardrails
-make test-e2e           # the program as a subprocess over the lesson's error texts
+make run            # classify the lesson's first error text and print the triage table (no project needed)
+make test-e2e       # the program as a subprocess over the lesson's error texts
 .venv/bin/gke-triage classify tests/fixtures/wrong-service-account.txt
 .venv/bin/gke-triage table tests/fixtures
 .venv/bin/gke-triage audit tests/fixtures/audit-log.json
@@ -69,6 +70,8 @@ make test-e2e       # the command-line program as a subprocess
 make audit          # pip-audit over the locked dependencies
 make check          # lint + test + validate
 ```
+
+`make up` and `make down` are aliases of `make deploy` and `make teardown` and need the project.
 
 ## Deploy to your own project
 
