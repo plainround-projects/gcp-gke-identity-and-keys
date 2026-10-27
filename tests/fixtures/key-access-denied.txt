@@ -1,0 +1,1 @@
+ERROR: (gcloud.storage.cp) HTTPError 403: Cloud KMS error when using key projects/example-sandbox-0000/locations/europe-west1/keyRings/files/cryptoKeys/files-key: Permission 'cloudkms.cryptoKeyVersions.useToEncrypt' denied on resource 'projects/example-sandbox-0000/locations/europe-west1/keyRings/files/cryptoKeys/files-key' (or it may not exist).

@@ -1,0 +1,58 @@
+[
+  {
+    "timestamp": "2026-10-26T10:00:01Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.create",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/default"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.create", "granted": false, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:00:09Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.create",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/default"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.create", "granted": false, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:01:00Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.get",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/reader-writer"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.get", "granted": true, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:02:00Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.get",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {"principalEmail": "operator@example.org"},
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {"timestamp": "2026-10-26T10:03:00Z", "textPayload": "not an audit entry"}
+]
