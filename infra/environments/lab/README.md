@@ -12,7 +12,7 @@ See `variables.tf`; `lab.tfvars.example` shows every value with placeholders. `s
 cd infra/environments/lab
 terraform init -backend=false
 terraform validate
-GOOGLE_OAUTH_ACCESS_TOKEN=offline-placeholder terraform plan -var-file=lab.tfvars.example   # 16 resources to add, no API call
+GOOGLE_OAUTH_ACCESS_TOKEN=offline-placeholder terraform plan -var-file=lab.tfvars.example   # 17 resources to add, no API call
 terraform test                                                                             # principal, key and bucket wiring
 ```
 

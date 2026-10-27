@@ -178,7 +178,7 @@ Dependency rule: `interfaces` -> `infrastructure` -> `application` -> `domain`, 
 
 ## Verification record
 
-Last verified on 2026-10-27 on macOS with Python 3.13, Terraform 1.17.0, tflint 0.65.0 (ruleset google 0.41.0), checkov 3.3.30, kubectl 1.x. The commands and their results are in the build report. Not verified: any behavior on a real cluster or against real Google Cloud error text.
+Last verified on 2026-10-27 on macOS with Python 3.13, Terraform 1.17.0, tflint 0.65.0 (ruleset google 0.41.0), checkov 3.3.30, kubectl 1.x. From a fresh clone: `make install`, `make check` (81 unit tests, lint, types, import rules, shellcheck, Terraform format, tflint, kustomize render, 7 module and environment validations, the offline plan of 17 resources, the Terraform tests, checkov) and `make test-e2e` (4 tests) passed; `make audit` found no known vulnerabilities. Not verified: any behavior on a real cluster or against real Google Cloud error text.
 
 ## License
 
