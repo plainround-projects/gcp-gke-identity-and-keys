@@ -91,6 +91,55 @@ jobs:
 
 `python:` is a job name; under `steps:` each item begins with `- ` and is a mapping (`uses:`, `with:` or `run:`).
 
+## The CI workflow, whole
+
+`.github/workflows/ci.yml`
+
+```yaml
+name: ci
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Format, lint, types, import rules, unit and end-to-end tests with coverage, dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: make lint-python test-python test-e2e
+      - run: make lint-manifests
+      - run: make audit
+
+  terraform:
+    name: Terraform format, tflint, validate, offline plan, policy tests, checkov
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.17.0"
+          terraform_wrapper: false
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.65.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install checkov==3.3.30
+      - run: make lint-terraform test-terraform validate
+```
+
+- `name: ci` names the workflow. `on: [push, pull_request]` starts it on every push and every pull request. `permissions: contents: read` gives its token read access to the repository and nothing else.
+- `jobs:` has two jobs, `python` and `terraform`. They run at the same time, each on a fresh Ubuntu machine (`runs-on: ubuntu-latest`). Each `name:` is the label shown in the web page.
+- A `steps` item is either `uses:` (a ready-made action, with `with:` for its inputs) or `run:` (a shell command). `actions/checkout@v4` copies the repository onto the machine; `actions/setup-python@v5` installs Python 3.12; `hashicorp/setup-terraform@v3` installs Terraform 1.17.0 (`terraform_wrapper: false` keeps the plain command); `terraform-linters/setup-tflint@v4` installs tflint `v0.65.0`; `pip install checkov==3.3.30` installs checkov at a fixed version.
+- The `run:` lines call `make` targets, so CI runs exactly what you run: `make lint-python test-python test-e2e`, `make lint-manifests` (this one needs `kubectl`, which the Ubuntu runner already has), `make audit`, and `make lint-terraform test-terraform validate`.
+
 ## 6. Try it yourself
 
 ```bash

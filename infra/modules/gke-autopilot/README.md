@@ -31,7 +31,7 @@ Used for: Step 1 (the cluster).
 
 ## Example
 
-See `infra/environments/sandbox/main.tf`, which composes this module.
+See `infra/environments/lab/main.tf`, which composes this module.
 
 ## Tests
 

@@ -71,6 +71,83 @@ A trimmed entry from the fixture:
 
 `authorizationInfo` holds the permission and `granted`; `status.code` 7 means `PERMISSION_DENIED`.
 
+## The whole sample export, entry by entry
+
+**JSON** is a text format for data, made of **objects** (`{ "name": value, ... }`: named values, like a form), **arrays** (`[ a, b ]`: ordered lists), texts in double quotes, numbers, `true`/`false` and `null`. Names must be in double quotes, items are separated by commas, and a comma after the last item is an error. `gcloud logging read ... --format=json` prints an array of log-entry objects.
+
+`tests/fixtures/audit-log.json`
+
+```json
+[
+  {
+    "timestamp": "2026-10-26T10:00:01Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.create",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/default"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.create", "granted": false, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:00:09Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.create",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/default"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.create", "granted": false, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:01:00Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.get",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {
+        "principalSubject": "principal://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/example-sandbox-0000.svc.id.goog/subject/ns/demo/sa/reader-writer"
+      },
+      "authorizationInfo": [
+        {"permission": "storage.objects.get", "granted": true, "resource": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt"}
+      ],
+      "status": {}
+    }
+  },
+  {
+    "timestamp": "2026-10-26T10:02:00Z",
+    "protoPayload": {
+      "serviceName": "storage.googleapis.com",
+      "methodName": "storage.objects.get",
+      "resourceName": "projects/_/buckets/example-sandbox-0000-files/objects/a.txt",
+      "authenticationInfo": {"principalEmail": "operator@example.org"},
+      "status": {"code": 7, "message": "PERMISSION_DENIED"}
+    }
+  },
+  {"timestamp": "2026-10-26T10:03:00Z", "textPayload": "not an audit entry"}
+]
+```
+
+The file is the array `[ ... ]` of five entries.
+
+1. **10:00:01Z**: a `storage.objects.create` call by the pod's principal on the `default` Kubernetes service account. `authorizationInfo` has one check, `granted: false`, and `status.code` is 7: denied.
+2. **10:00:09Z**: the same denial a few seconds later. The tool counts these together (`2x`).
+3. **10:01:00Z**: a `storage.objects.get` by the right account, `granted: true`, `status` is an empty object `{}`: allowed. It must be left out of the result.
+4. **10:02:00Z**: a call by a person (`principalEmail`, no `principalSubject`) with `status.code` 7 but no `authorizationInfo` at all. The tool records a denial with an empty permission.
+5. **10:03:00Z**: `{"timestamp": ..., "textPayload": "not an audit entry"}`, a log line with no `protoPayload`. It must be skipped.
+
+Field by field: `timestamp` is when it happened (UTC, ISO 8601); `protoPayload` is the audit record; `serviceName` and `methodName` say which API call it was; `resourceName` is the object (`projects/_/buckets/BUCKET/objects/NAME`, where `_` stands for "any project"); `authenticationInfo` says who; `authorizationInfo` lists each permission checked with `granted`; `status.code` is the result as a number (0 means success, 7 is `PERMISSION_DENIED`).
+
 ## 6. Try it yourself
 
 ```bash

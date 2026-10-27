@@ -19,7 +19,7 @@ Used for: Step 3 (finding the denial for the default service account).
 
 ## Example
 
-See `infra/environments/sandbox/main.tf`, which composes this module.
+See `infra/environments/lab/main.tf`, which composes this module.
 
 ## Tests
 

@@ -26,7 +26,7 @@ Used for: Step 1 (nodes without external addresses can still reach Google APIs a
 
 ## Example
 
-See `infra/environments/sandbox/main.tf`, which composes this module.
+See `infra/environments/lab/main.tf`, which composes this module.
 
 ## Tests
 

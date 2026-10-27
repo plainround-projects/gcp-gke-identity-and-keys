@@ -8,6 +8,19 @@ One file per technology this repository uses, written for a reader who has never
 2. [cloud-kms.md](cloud-kms.md): the customer-managed key, who uses it, and the kill switch.
 3. [kubernetes.md](kubernetes.md): the pod, its service account and the settings that keep it keyless and locked down.
 
+## Never used a terminal? Start here
+
+Every "Try it yourself" section asks you to type commands. Here is everything you need to do that.
+
+- A **terminal** is a window where you type a line of text, press Return, and a program runs and prints its answer in the same window. On a Mac it is the Terminal app; on Windows use WSL (Windows Subsystem for Linux); on Linux every distribution has one. The text before your cursor, often ending in `$` or `%`, is the **prompt**; you do not type it.
+- A **command** is the name of a program followed by **arguments**, the words that tell it what to do: `ls docs` runs the program `ls` (list files) with the argument `docs`. A word that starts with `-` or `--` is a **flag** or **option**: `--help` asks most programs to describe themselves.
+- Your terminal is always "in" a folder, the **current directory**. `pwd` prints it, `cd NAME` moves into a folder, `cd ..` moves up one, and `ls` lists what is inside. Every command in these notes is meant to be run from the **root of the repository**: the folder that holds `README.md`. A **path** such as `src/app/main.py` names a file by the folders leading to it.
+- `.venv/bin/python` means "the `python` program inside the folder `.venv`, inside `bin`". `.venv` is a **virtual environment**: a private folder that holds a copy of Python and the libraries this project needs, so nothing is installed into your computer's own Python. `make install` creates it.
+- `|` (a **pipe**) sends the output of the command on its left into the command on its right: `ls | head -3` shows the first three lines of the listing. `>` writes output into a file instead of the screen. `&&` runs the next command only if the first succeeded. `;` runs the next one regardless.
+- A program ends with an **exit status**, a number: `0` means it worked, anything else means it failed. `echo $?` prints the status of the last command. You will see `exit=0` or `exit=1` in the notes for that reason.
+- Lines in the notes that start with `Expected:` say what you should see. Small differences (timing, version numbers, the order of some lines) do not matter; a different **kind** of output does.
+- **Never paste a command you do not understand into a terminal with a real cloud account signed in.** Commands marked "not run here" in these notes need a Google Cloud account, an organization, Docker or a cluster; read them, do not run them until you have one.
+
 ## Reading order
 
 **The language and how the project is built**
@@ -18,6 +31,9 @@ One file per technology this repository uses, written for a reader who has never
 | [regular-expressions.md](regular-expressions.md) | The patterns that recognize error messages and validate identifiers. |
 | [argparse.md](argparse.md) | The command-line interface of `gke-triage`. |
 | [json.md](json.md) | The audit-log export the tool reads. |
+| [env-files.md](env-files.md) | `.env`: your private settings for the scripts and `make`. |
+| [markdown.md](markdown.md) | The READMEs, the decision records and the triage table. |
+| [mermaid.md](mermaid.md) | The diagram in `ARCHITECTURE.md`. |
 | [pyproject-toml.md](pyproject-toml.md) | `pyproject.toml` and TOML: metadata and every tool's settings. |
 | [pip-lock-files.md](pip-lock-files.md) | Virtual environment, hash-pinned lock files, `uv`, `pip-audit`. |
 | [make.md](make.md) | The `Makefile`. |

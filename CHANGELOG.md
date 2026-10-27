@@ -10,4 +10,4 @@ All notable changes to this project are recorded here. The format follows [Keep 
 - Kustomize manifests for the keyless pod, a network policy and the wrong-identity overlay for break one.
 - `gke-triage`: classify an error text as identity, authorization or key, summarize audit denials, render the triage table, build and check the workload identity principal. Layered, typed, tested on the lesson's error texts.
 - The lesson's runbook as scripts, and a CI workflow.
-- `tech/`: 35 technology notes and an index, one file per language, tool, service and file format, for a reader new to all of them.
+- `tech/`: 38 technology notes and an index, one file per language, tool, service and file format, for a reader new to all of them.

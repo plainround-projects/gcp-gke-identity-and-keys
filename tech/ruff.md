@@ -58,7 +58,7 @@ ignore = ["N818"]
   - `PT`: pytest style.
   - `S`: security smells (hard-coded passwords, `assert` in production code, `subprocess` use).
   - `D100`, `D101`, `D103`, `D104`: docstring required on a module, a class, a public function and a package. The public surface must be documented.
-- `ignore = ["N818"]` (when present) turns off one rule with a written reason: error classes here are named for the situation (`PublishFailed`), not with an `Error` suffix.
+- `ignore = ["N818"]` (when present) turns off one rule with a written reason: error classes here are named for the situation (`UnreadableAuditLog`), not with an `Error` suffix.
 - `[tool.ruff.lint.per-file-ignores]` relaxes rules for tests: no docstrings (`D`), and `assert` is allowed (`S101`) because that is what tests do.
 
 ## 6. Try it yourself

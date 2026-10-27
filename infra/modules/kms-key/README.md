@@ -28,7 +28,7 @@ Used for: Steps 1 and 5 (the customer-managed key and its kill switch).
 
 ## Example
 
-See `infra/environments/sandbox/main.tf`, which composes this module.
+See `infra/environments/lab/main.tf`, which composes this module.
 
 ## Tests
 
