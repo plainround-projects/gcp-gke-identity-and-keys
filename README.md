@@ -31,7 +31,7 @@ The run follows one copy to the bucket and ends with an audit entry for the call
 ## What is here
 
 - `infra/`: Terraform (`google` provider `~> 8.8`), six modules and one environment, `lab`: the APIs, a VPC, an Autopilot cluster, a KMS key ring and key, the encrypted bucket with the pod's role, and the Cloud Storage data-access audit logs.
-- `manifests/`: Kustomize. `base/` is the namespace, the `reader-writer` Kubernetes service account, the pod (`files`) and a network policy. `overlays/wrong-identity/` adds `files-default`, the same pod on the default service account (break one).
+- `manifests/`: Kustomize. `base/` is the namespace, the `reader-writer` Kubernetes service account, the `files` Deployment (1 replica) and a network policy. `overlays/wrong-identity/` adds the `files-default` Deployment, the same pod on the default service account (break one).
 - `src/gke_triage/`: the `gke-triage` command: `classify` an error text, `audit` a Cloud Logging export, `table` the triage table from captured errors, `principal` and `check-binding` for the workload identity principal. Standard library only.
 - `scripts/`: the lesson's runbook as the exact `gcloud`, `kubectl` and `terraform` commands: deploy, prove, three break scripts and their restores, teardown.
 - `tests/`: unit tests (classifier, principal, manifests, Terraform guardrails), end-to-end tests of the program, and `tests/fixtures/` with the lesson's error texts.

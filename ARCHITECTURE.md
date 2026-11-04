@@ -6,7 +6,7 @@ A GKE Autopilot cluster runs a pod that reads and writes a Cloud Storage bucket 
 
 | Component | Owns | Identity / access |
 | --- | --- | --- |
-| **Pod** `files` (`manifests/base`, namespace `demo`) | A `google-cloud-cli` container that sleeps, so the owner can run storage commands inside it and see exactly which identity they use. | Kubernetes service account `reader-writer`. No token mounted, no secret, no key file. |
+| **Deployment** `files` (`manifests/base`, namespace `demo`, 1 replica, so one pod) | A `google-cloud-cli` container that sleeps, so the owner can run storage commands inside it and see exactly which identity they use. | Kubernetes service account `reader-writer`. No token mounted, no secret, no key file. |
 | **Workload identity pool** `PROJECT_ID.svc.id.goog` | Turns a pod's namespace and Kubernetes service account into an IAM principal. Always on in Autopilot. | The principal `principal://iam.googleapis.com/projects/NUMBER/locations/global/workloadIdentityPools/PROJECT_ID.svc.id.goog/subject/ns/demo/sa/reader-writer`. |
 | **Bucket** (`modules/cmek-bucket`) | The files. Private, uniform access, versioned, default encryption with the key. | `roles/storage.objectUser` for the pod's principal, on the bucket only. |
 | **CMEK key** (`modules/kms-key`) | Key ring `files`, key `files-key`: 90-day rotation, 24-hour destruction window. | `cryptoKeyEncrypterDecrypter` for the **Cloud Storage service agent**, not for the pod. |
@@ -21,7 +21,7 @@ Drawn versions of this figure and of the walk-through: [the architecture](docs/d
 
 ```mermaid
 flowchart LR
-    pod["Pod files<br/>KSA reader-writer<br/>ns demo"] -->|1. token from the metadata server| wif["Workload identity pool<br/>PROJECT_ID.svc.id.goog"]
+    pod["Deployment files (1 pod)<br/>KSA reader-writer<br/>ns demo"] -->|1. token from the metadata server| wif["Workload identity pool<br/>PROJECT_ID.svc.id.goog"]
     pod -->|2. read, write object| bucket[("Bucket<br/>default key: files-key")]
     bucket -->|3. IAM check on the principal| iam{{"Bucket policy<br/>objectUser for the principal"}}
     bucket -->|4. use the key| gcs_agent["Cloud Storage<br/>service agent"]
