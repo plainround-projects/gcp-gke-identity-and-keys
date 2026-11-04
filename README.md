@@ -10,6 +10,24 @@ A GKE Autopilot cluster whose pod reads and writes an encrypted Cloud Storage bu
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md), decisions in [docs/adr](docs/adr) |
 | **Author** | Sumit Srivastava |
 
+## Architecture
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/architecture-dark.svg">
+  <img alt="A pod in a GKE Autopilot cluster gets a token from the identity pool, then reads and writes a bucket that the bucket policy opens to its principal. The Cloud Storage service agent, not the pod, uses the Cloud KMS key files-key; a disabled key is the amber failure path. gke-triage reads the audit log export." src="docs/diagrams/architecture.svg">
+</picture>
+
+Notice that the pod holds no role on the key: Cloud Storage uses the key through its own service agent, so a key failure names the key and not the pod.
+
+## How one run flows
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/flow-dark.svg">
+  <img alt="One gcloud storage cp from the pod: token, request, IAM check, key use and audit entry. The amber rows show key version 1 disabled and the 403 that names the key." src="docs/diagrams/flow.svg">
+</picture>
+
+The run follows one copy to the bucket and ends with an audit entry for the call; the amber rows show where a disabled key refuses it and what the pod sees.
+
 ## What is here
 
 - `infra/`: Terraform (`google` provider `~> 8.8`), six modules and one environment, `lab`: the APIs, a VPC, an Autopilot cluster, a KMS key ring and key, the encrypted bucket with the pod's role, and the Cloud Storage data-access audit logs.

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-labelledby="t d">
+<title id="t">Keyless access, and where it can fail</title>
+<desc id="d">A pod named files in a GKE Autopilot cluster, namespace demo, runs as the Kubernetes service account reader-writer with no key file. It gets a token from the workload identity pool, then reads and writes a Cloud Storage bucket. The bucket policy gives the pod principal roles/storage.objectUser. The Cloud Storage service agent, not the pod, uses the Cloud KMS key files-key, and that use is the amber failure path: a disabled key version gives a 403 that names the key. Each call writes an audit entry to Cloud Logging, and the gke-triage tool reads the log export on your machine.</desc>
+<style>
+:root{--paper:#ffffff;--ink:#10243d;--mute:#52677f;--accent:#0a6aa8;--good:#19743f;--warn:#8a5a00}
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;fill:var(--ink)}
+.title{font-family:Georgia,'Iowan Old Style','Times New Roman',serif;font-size:36px}
+.caption{font-size:16px;fill:var(--mute)}
+.name{font-size:20px;font-weight:600}
+.lane{font-size:17px;font-weight:600}
+.sub{font-size:15px;fill:var(--mute)}
+.label{font-size:15px}
+.tag{font-size:15px;fill:var(--mute)}
+.num{font-size:15px;font-weight:700;fill:var(--paper)}
+.legend{font-size:14px;fill:var(--mute)}
+.t-accent{fill:var(--accent)}
+.t-good{fill:var(--good)}
+.t-warn{fill:var(--warn)}
+.t-ink{fill:var(--ink)}
+.b{font-weight:600}
+.paper{fill:var(--paper);stroke:var(--mute);stroke-opacity:.3}
+.grid{fill:url(#grid)}
+.boundary{fill:var(--mute);fill-opacity:.035;stroke:var(--mute);stroke-opacity:.7;stroke-dasharray:6 5}
+.svc{fill:var(--accent);fill-opacity:.08;stroke:var(--accent);stroke-width:1.25}
+.store{fill:var(--mute);fill-opacity:.1;stroke:var(--mute);stroke-width:1.25}
+.rim{fill:none;stroke:var(--mute);stroke-width:1.25}
+.actor{fill:none;stroke:var(--mute);stroke-width:1.25}
+.slot{fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1}
+.note{fill:var(--warn);fill-opacity:.09;stroke:var(--warn);stroke-width:1}
+.win{fill:var(--good);fill-opacity:.09;stroke:var(--good);stroke-width:1}
+.hair{fill:none;stroke:var(--mute);stroke-opacity:.4;stroke-width:1}
+.zone{fill:var(--accent);fill-opacity:.045;stroke:var(--accent);stroke-width:1.25;stroke-dasharray:6 5}
+.stop{fill:none;stroke:var(--warn);stroke-width:4;stroke-linecap:round}
+.mask{fill:var(--paper)}
+.sync,.async,.read,.fail,.ok{fill:none}
+.sync{stroke:var(--accent);stroke-width:1.75;marker-end:url(#a-sync)}
+.async{stroke:var(--accent);stroke-width:1.75;stroke-dasharray:8 6;marker-end:url(#a-async)}
+.read{stroke:var(--mute);stroke-width:1.75;stroke-linecap:round;stroke-dasharray:1 6;marker-end:url(#a-read)}
+.fail{stroke:var(--warn);stroke-width:2;marker-end:url(#a-fail)}
+.ok{stroke:var(--good);stroke-width:1.75;marker-end:url(#a-ok)}
+.dot{fill:var(--accent)}
+.dot-w{fill:var(--warn)}
+.dot-g{fill:var(--good)}
+.head-sync,.head-async{stroke:var(--accent)}
+.head-sync{fill:var(--accent)}
+.head-async,.head-read{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.head-read{stroke:var(--mute)}
+.head-fail{fill:var(--warn)}
+.head-ok{fill:var(--good)}
+.gridline{fill:none;stroke:var(--mute);stroke-opacity:.09}
+</style>
+<defs>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path class="gridline" d="M40 0H0V40"/></pattern>
+<marker id="a-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-sync" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-async" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-read" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-read" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-fail" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-ok" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="paper" x="0.5" y="0.5" width="1199" height="779" rx="16"/>
+<rect class="grid" x="1" y="1" width="1198" height="778" rx="16"/>
+<text class="title" x="48" y="68">Keyless access, and where it can fail</text>
+<text class="caption" x="48" y="100">Three layers decide access: identity, IAM on the bucket, the key. Amber: the key, used by the service agent.</text>
+<rect class="boundary" x="48" y="132" width="280" height="308" rx="14"/>
+<text class="tag" x="64" y="160">GKE Autopilot cluster</text>
+<rect class="svc" x="72" y="184" width="232" height="108" rx="12"/>
+<text class="name" x="88" y="216">Pod files</text>
+<text class="sub" x="88" y="240">KSA reader-writer</text>
+<text class="sub" x="88" y="262">ns demo, no key file</text>
+<rect class="svc" x="448" y="184" width="256" height="108" rx="12"/>
+<text class="name" x="464" y="216">Identity pool</text>
+<text class="sub" x="464" y="240">PROJECT_ID.svc.id.goog</text>
+<text class="sub" x="464" y="262">pod to IAM principal</text>
+<path class="store" d="M448 340a128 12 0 0 1 256 0v100a128 12 0 0 1 -256 0z"/>
+<path class="rim" d="M448 340a128 12 0 0 0 256 0"/>
+<text class="name" x="576" y="380" text-anchor="middle">Bucket</text>
+<text class="sub" x="576" y="402" text-anchor="middle">default key: files-key</text>
+<text class="sub" x="576" y="424" text-anchor="middle">private, versioned</text>
+<rect class="svc" x="872" y="184" width="256" height="108" rx="12"/>
+<text class="name" x="888" y="216">Bucket policy</text>
+<text class="sub" x="888" y="240">roles/storage.objectUser</text>
+<text class="sub" x="888" y="262">for the pod principal</text>
+<rect class="svc" x="872" y="340" width="256" height="108" rx="12"/>
+<text class="name" x="888" y="372">Service agent</text>
+<text class="sub" x="888" y="396">Cloud Storage's own</text>
+<text class="sub" x="888" y="418">holds the key role</text>
+<path class="store" d="M872 520a128 12 0 0 1 256 0v120a128 12 0 0 1 -256 0z"/>
+<path class="rim" d="M872 520a128 12 0 0 0 256 0"/>
+<text class="name" x="1000" y="560" text-anchor="middle">CMEK key</text>
+<text class="sub" x="1000" y="582" text-anchor="middle">ring files, files-key</text>
+<text class="sub" x="1000" y="604" text-anchor="middle">90-day rotation</text>
+<text class="sub" x="1000" y="626" text-anchor="middle">destroy after 24 h</text>
+<path class="store" d="M448 520a128 12 0 0 1 256 0v84a128 12 0 0 1 -256 0z"/>
+<path class="rim" d="M448 520a128 12 0 0 0 256 0"/>
+<text class="name" x="576" y="560" text-anchor="middle">Cloud Logging</text>
+<text class="sub" x="576" y="582" text-anchor="middle">data-access audit</text>
+<text class="sub" x="576" y="604" text-anchor="middle">off by default</text>
+<rect class="actor" x="48" y="538" width="240" height="72" rx="36"/>
+<text class="name" x="168" y="570" text-anchor="middle">gke-triage</text>
+<text class="sub" x="168" y="592" text-anchor="middle">classify, audit, table</text>
+<rect class="note" x="48" y="620" width="300" height="96" rx="10"/>
+<text class="label b t-warn" x="64" y="650">scripts/break-key.sh</text>
+<text class="sub" x="64" y="676">disable key version 1, read</text>
+<text class="sub" x="64" y="698">first.txt: 403 names the key</text>
+<path class="sync" d="M304 220H448"/>
+<text class="label t-accent" x="340" y="208">get token</text>
+<path class="sync" d="M188 292V392Q188 404 200 404H448"/>
+<text class="label t-accent" x="338" y="392">read, write</text>
+<path class="sync" d="M704 360H772Q784 360 784 348V252Q784 240 796 240H872"/>
+<text class="label t-accent" x="772" y="322" text-anchor="end">IAM check</text>
+<path class="sync" d="M704 394H872"/>
+<text class="label t-accent" x="720" y="382">use the key</text>
+<path class="fail" d="M1000 448V520"/>
+<path class="stop" d="M988 478H1012"/>
+<text class="label t-warn" x="1020" y="500">key disabled</text>
+<path class="async" d="M576 464V520"/>
+<text class="label t-accent" x="588" y="498">audit entry</text>
+<path class="read" d="M448 574H288"/>
+<text class="label" x="300" y="562">log export</text>
+<path class="sync" d="M48 736H112"/><text class="legend" x="124" y="741">sync call</text>
+<path class="async" d="M264 736H328"/><text class="legend" x="340" y="741">async message</text>
+<path class="read" d="M520 736H584"/><text class="legend" x="596" y="741">read</text>
+<path class="fail" d="M696 736H760"/><text class="legend" x="772" y="741">failure path</text>
+</svg>

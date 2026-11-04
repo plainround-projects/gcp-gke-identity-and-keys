@@ -17,6 +17,8 @@ A GKE Autopilot cluster runs a pod that reads and writes a Cloud Storage bucket 
 
 ## Data flow
 
+Drawn versions of this figure and of the walk-through: [the architecture](docs/diagrams/architecture.svg) and [one run](docs/diagrams/flow.svg).
+
 ```mermaid
 flowchart LR
     pod["Pod files<br/>KSA reader-writer<br/>ns demo"] -->|1. token from the metadata server| wif["Workload identity pool<br/>PROJECT_ID.svc.id.goog"]
